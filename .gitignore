@@ -31,6 +31,7 @@ models/
 # --- 데이터 (대용량 원본 제외, 샘플/더미만 예외 허용) ---
 data/raw/
 data/aihub/
+data/processed/
 data/*.xlsx
 data/*.parquet
 *.zip
