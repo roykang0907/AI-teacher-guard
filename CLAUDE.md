@@ -28,7 +28,9 @@
 
 ### 스택
 - 백엔드: FastAPI(Python 3.11) + PostgreSQL + pgvector + WebSocket
-- 프론트: Vite + React + TS + Tailwind + shadcn/ui + Zustand + React Query + Tiptap
+- 프론트: **Expo(React Native) + TS + NativeWind + gluestack-ui** + Zustand + React Query + 커스텀 LintEditor
+  - ↳ `npm run web`(브라우저) / `npm run ios`(네이티브 앱) 동시 지원. (2026-06-07 사용자 확정 — 기존 Vite 웹에서 변경)
+  - ↳ Tiptap은 웹 전용이라 제외 → 실시간 빨간줄은 `TextInput + 하이라이트 오버레이` 커스텀 구현
 - ML: transformers + PEFT + TRL (+ Unsloth), QLoRA 4-bit (r=16, alpha=32)
 - 1단계: `skt/kobert-base-v1` + `kobert_tokenizer`
 
@@ -56,7 +58,7 @@
    - 승인 후 실데이터 파인튜닝 → Macro-F1 평가 (위험→정상 오분류 최소화가 최우선)
 3. **STEP 3 — 2단계 순화 LLM + RAG**: 합성데이터 1000건 생성 → Qwen2.5 QLoRA → GGUF → Ollama → pgvector RAG
 4. **STEP 4 — 백엔드**: FastAPI 5 엔드포인트 + 린터 룰 + docker-compose
-5. **STEP 5 — 프론트**: 비동기 대시보드(순화 카드/원본 토글/우선순위 큐) + Tiptap 실시간 빨간줄
+5. **STEP 5 — 프론트(Expo)**: 비동기 대시보드(순화 카드/원본 토글/우선순위 큐) + 커스텀 LintEditor 실시간 빨간줄 (web/ios 공용)
 6. **STEP 6 — 통합·시연·발표**
 
 ### FastAPI 엔드포인트 (4단계 목표)
