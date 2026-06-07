@@ -30,8 +30,12 @@ models/
 
 # --- 데이터 (대용량 원본 제외, 샘플/더미만 예외 허용) ---
 data/raw/
-data/aihub/
 data/processed/
+# AI Hub 원본 데이터는 제외하되, 배치 위치 안내용 빈 폴더 골격(.gitkeep)은 추적
+data/aihub/**
+!data/aihub/**/
+!data/aihub/**/.gitkeep
+!data/aihub/**/*.md
 data/*.xlsx
 data/*.parquet
 *.zip
