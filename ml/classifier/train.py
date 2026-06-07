@@ -21,6 +21,28 @@ from .labels import LABELS
 from .model import load_model, load_tokenizer
 
 
+def compute_class_weights(train_rows: list[dict], cfg: TrainConfig) -> list[float]:
+    """학습 데이터 분포에서 역빈도 클래스 가중치를 계산.
+
+    w_i = N / (num_labels * count_i), 위험 클래스엔 danger_boost 추가.
+    ★ 위험→정상 false negative 최소화가 목적.
+    """
+    from collections import Counter
+
+    from .labels import DANGER
+
+    counts = Counter(r["label_id"] for r in train_rows)
+    total = sum(counts.values())
+    weights = []
+    for i in range(cfg.num_labels):
+        c = counts.get(i, 0)
+        w = total / (cfg.num_labels * c) if c else 1.0
+        if i == DANGER:
+            w *= cfg.danger_boost
+        weights.append(round(w, 4))
+    return weights
+
+
 def pick_device() -> str:
     """CUDA(Colab) > MPS(맥북) > CPU 순으로 선택."""
     import torch
@@ -39,11 +61,11 @@ class WeightedTrainer:
     """
 
     @staticmethod
-    def build(cfg: TrainConfig):
+    def build(cfg: TrainConfig, class_weights: list[float]):
         import torch
         from transformers import Trainer
 
-        weights = torch.tensor(cfg.class_weights, dtype=torch.float)
+        weights = torch.tensor(class_weights, dtype=torch.float)
 
         class _Trainer(Trainer):
             def compute_loss(self, model, inputs, return_outputs=False, **kwargs):
@@ -100,6 +122,17 @@ def main() -> None:
     train_rows, val_rows, test_rows = stratified_split(rows, cfg)
     print(f"  data: train={len(train_rows)} val={len(val_rows)} test={len(test_rows)}")
 
+    # 클래스 가중치 (자동 역빈도 or 수동)
+    if cfg.use_class_weights:
+        class_weights = (
+            compute_class_weights(train_rows, cfg)
+            if cfg.auto_class_weights
+            else list(cfg.class_weights)
+        )
+        from .labels import LABELS as _L
+
+        print(f"  class_weights: " + ", ".join(f"{_L[i]}={w}" for i, w in enumerate(class_weights)))
+
     # 2) 토크나이저 / 모델
     tokenizer = load_tokenizer(cfg)
     model = load_model(cfg)
@@ -129,7 +162,7 @@ def main() -> None:
     )
 
     trainer_cls = (
-        WeightedTrainer.build(cfg)
+        WeightedTrainer.build(cfg, class_weights)
         if cfg.use_class_weights
         else __import__("transformers").Trainer
     )

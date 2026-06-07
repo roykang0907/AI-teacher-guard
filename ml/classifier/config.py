@@ -32,9 +32,13 @@ class TrainConfig:
 
     # --- 클래스 가중치 ---
     # ★ 위험→정상 false negative 최소화가 최우선.
-    # 위험 클래스 손실에 가중치를 줘 누락을 강하게 억제한다.
+    # 감성대화 말뭉치는 주의(70%)로 크게 쏠려 있어, 학습 데이터 분포에서
+    # 역빈도 가중치를 자동 계산하고 위험 클래스에 추가 부스트를 준다.
     use_class_weights: bool = True
-    class_weights: tuple[float, float, float] = (1.0, 1.2, 1.6)  # (정상, 주의, 위험)
+    auto_class_weights: bool = True  # 학습 데이터에서 역빈도 가중치 자동 계산
+    danger_boost: float = 1.3        # 위험 클래스 추가 가중(FN 최소화)
+    # auto_class_weights=False 일 때 사용할 수동값 (정상, 주의, 위험)
+    class_weights: tuple[float, float, float] = (2.6, 0.5, 1.9)
 
     # --- 경로 ---
     output_dir: str = "outputs/kobert-classifier"
