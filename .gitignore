@@ -1,0 +1,62 @@
+# ===== aiteacherguard .gitignore =====
+# 무거운 학습 산출물·대용량 데이터는 git 제외 (코드/노트북 골격만 동기화)
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# --- 모델 / 가중치 / 대용량 산출물 (절대 커밋 금지) ---
+*.bin
+*.safetensors
+*.gguf
+*.pt
+*.pth
+*.onnx
+*.ckpt
+*.npz
+ml/outputs/
+ml/checkpoints/
+ml/runs/
+models/
+
+# --- 데이터 (대용량 원본 제외, 샘플/더미만 예외 허용) ---
+data/raw/
+data/aihub/
+data/*.xlsx
+data/*.parquet
+*.zip
+*.tar
+*.tar.gz
+# 더미·골든셋 등 작은 샘플은 추적 허용
+!data/samples/
+!data/samples/**
+
+# --- Node / Frontend ---
+node_modules/
+dist/
+.vite/
+*.local
+.env
+.env.*
+!.env.example
+
+# --- OS / IDE ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# --- 비밀/자격증명 ---
+*.pem
+*.key
+secrets.*

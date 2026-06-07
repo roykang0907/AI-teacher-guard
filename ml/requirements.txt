@@ -1,0 +1,20 @@
+# aiteacherguard — ML 의존성 (1단계 KoBERT 분류기)
+# 학습 머신(맥북 M5 Max / Colab)에서 설치. 추론 런타임(2단계 LLM)은 Ollama 별도.
+
+# --- 핵심 ---
+torch>=2.2
+transformers>=4.44
+sentencepiece>=0.2.0          # KoBERT 토크나이저
+scikit-learn>=1.4             # Macro-F1 / 혼동행렬 / 분류 리포트
+numpy>=1.26
+pandas>=2.2
+
+# --- KoBERT 토크나이저 (skt/kobert-base-v1) ---
+# pip 로 자동 설치가 까다로워 README/model.py 안내 참조:
+#   pip install 'git+https://github.com/SKTBrain/KoBERT.git#egg=kobert_tokenizer&subdirectory=kobert_hf'
+# 대안 백본 사용 시: KOBERT_MODEL=monologg/kobert (AutoTokenizer 호환)
+
+# --- 학습 보조 ---
+accelerate>=0.30              # transformers Trainer 디바이스 관리(MPS/CUDA)
+
+# --- (2단계에서 추가 예정) peft, trl, bitsandbytes 등은 순화 LLM 단계에서 분리 관리 ---
