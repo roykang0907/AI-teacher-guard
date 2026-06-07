@@ -28,14 +28,11 @@ ml/checkpoints/
 ml/runs/
 models/
 
-# --- 데이터 (대용량 원본 제외, 샘플/더미만 예외 허용) ---
+# --- 데이터 ---
+# AI Hub 데이터(data/aihub/)는 git 추적한다 — Claude가 직접 읽고 변환 스크립트를 맞춘다.
+# (AI Hub 공개 데이터 + private 레포 전제. zip 같은 압축 원본만 제외하고 풀린 파일은 추적)
 data/raw/
 data/processed/
-# AI Hub 원본 데이터는 제외하되, 배치 위치 안내용 빈 폴더 골격(.gitkeep)은 추적
-data/aihub/**
-!data/aihub/**/
-!data/aihub/**/.gitkeep
-!data/aihub/**/*.md
 data/*.xlsx
 data/*.parquet
 *.zip
