@@ -23,6 +23,10 @@ _DRAFT_SYSTEM = (
     "4~5문장으로 따뜻하고 간결하게 본문만 출력하라."
 )
 
+# 작업 구분용 user 메시지 지시문 — 학습(ml/rewriter/dataset.py)과 '정확히 일치'해야 함
+_SUNHWA_INSTR = "다음 학부모 민원을 공적인 표현으로 요약해줘.\n민원: "
+_DAPBYEON_INSTR = "다음 학부모 민원에 대해 교사가 학부모에게 보낼 답변 초안을 작성해줘.\n민원: "
+
 _STUB_REWRITE_MARK = "[자동 순화 미적용"
 
 
@@ -50,7 +54,7 @@ def _ollama_generate(prompt: str, system: str) -> str | None:
 
 def rewrite_complaint(text: str) -> tuple[str, str]:
     """민원 순화. 반환 (순화문, engine)."""
-    out = _ollama_generate(text, _REWRITE_SYSTEM)
+    out = _ollama_generate(_SUNHWA_INSTR + text, _REWRITE_SYSTEM)
     if out:
         return out, "ollama"
     # 폴백: 원문 보존 + 안내 (은폐 아님 — 원본 항상 열람 가능)
@@ -85,9 +89,9 @@ def draft_reply(
     base = complaint_text
     if rewritten and _STUB_REWRITE_MARK not in rewritten:
         base = rewritten
-    # ⚠️ 학습 시 user 메시지가 '민원 원문'뿐이었으므로 동일하게 맞춘다(파인튜닝 모델 호환).
+    # ⚠️ 학습과 동일한 '답변 작성' 지시문을 붙여 순화와 작업을 명확히 구분(파인튜닝 모델 호환).
     #    RAG 지침은 프롬프트에 넣지 않고 UI(references)로만 보여 준다.
-    out = _ollama_generate(base, _DRAFT_SYSTEM)
+    out = _ollama_generate(_DAPBYEON_INSTR + base, _DRAFT_SYSTEM)
     if out:
         return out, "ollama"
 

@@ -40,11 +40,16 @@ def load_pairs(jsonl_path: str | Path) -> list[dict]:
     return rows
 
 
+# 작업을 확실히 구분하기 위한 user 메시지 지시문 (학습=추론 동일 유지 필수)
+SUNHWA_INSTR = "다음 학부모 민원을 공적인 표현으로 요약해줘.\n민원: "
+DAPBYEON_INSTR = "다음 학부모 민원에 대해 교사가 학부모에게 보낼 답변 초안을 작성해줘.\n민원: "
+
+
 def to_messages(pair: dict) -> list[dict]:
-    """한 쌍 → chat 메시지 리스트."""
+    """원문 → 순화 메시지 리스트."""
     return [
         {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": pair["original"]},
+        {"role": "user", "content": SUNHWA_INSTR + pair["original"]},
         {"role": "assistant", "content": pair["rewritten"]},
     ]
 
@@ -53,7 +58,7 @@ def to_reply_messages(pair: dict) -> list[dict]:
     """원문 → 교사 답변 메시지 리스트."""
     return [
         {"role": "system", "content": DRAFT_SYSTEM},
-        {"role": "user", "content": pair["original"]},
+        {"role": "user", "content": DAPBYEON_INSTR + pair["original"]},
         {"role": "assistant", "content": pair["reply"]},
     ]
 
