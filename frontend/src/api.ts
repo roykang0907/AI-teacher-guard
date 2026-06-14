@@ -43,4 +43,9 @@ export const api = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text }),
     }).then(j<LintResult>),
+
+  deleteComplaint: (id: number) =>
+    fetch(`${API}/complaints/${id}`, { method: "DELETE" }),
+
+  clearComplaints: () => fetch(`${API}/complaints`, { method: "DELETE" }),
 };

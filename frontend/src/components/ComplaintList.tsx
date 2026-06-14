@@ -5,9 +5,10 @@ interface Props {
   items: ComplaintListItem[];
   selectedId: number | null;
   onSelect: (id: number) => void;
+  onDelete: (id: number) => void;
 }
 
-export function ComplaintList({ items, selectedId, onSelect }: Props) {
+export function ComplaintList({ items, selectedId, onSelect, onDelete }: Props) {
   if (items.length === 0) {
     return (
       <div className="p-6 text-sm text-slate-400">
@@ -40,6 +41,16 @@ export function ComplaintList({ items, selectedId, onSelect }: Props) {
             <span className="ml-auto text-xs text-slate-400">
               우선 {c.priority}
             </span>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(c.id);
+              }}
+              title="삭제"
+              className="text-slate-300 hover:text-red-600"
+            >
+              ✕
+            </button>
           </div>
           <p className="mt-1 line-clamp-2 text-sm text-slate-600">
             {c.rewritten_text || "(순화 미적용)"}

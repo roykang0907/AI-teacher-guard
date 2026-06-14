@@ -43,6 +43,19 @@ export default function App() {
     }
   }
 
+  async function clearAll() {
+    if (!confirm("모든 민원을 삭제할까요?")) return;
+    await api.clearComplaints();
+    setSelectedId(null);
+    await refresh();
+  }
+
+  async function deleteOne(id: number) {
+    await api.deleteComplaint(id);
+    setSelectedId((prev) => (prev === id ? null : prev));
+    await refresh();
+  }
+
   return (
     <div className="flex h-full flex-col">
       {/* 헤더 */}
@@ -74,13 +87,24 @@ export default function App() {
       {/* 본문: 좌(우선순위 큐) / 우(상세) */}
       <main className="flex flex-1 overflow-hidden">
         <aside className="w-80 shrink-0 overflow-y-auto border-r border-slate-200 bg-white">
-          <div className="border-b border-slate-100 px-4 py-2 text-xs font-semibold text-slate-500">
-            우선순위 큐 ({items.length})
+          <div className="flex items-center justify-between border-b border-slate-100 px-4 py-2">
+            <span className="text-xs font-semibold text-slate-500">
+              우선순위 큐 ({items.length})
+            </span>
+            {items.length > 0 && (
+              <button
+                onClick={clearAll}
+                className="text-xs text-slate-400 hover:text-red-600"
+              >
+                전체 비우기
+              </button>
+            )}
           </div>
           <ComplaintList
             items={items}
             selectedId={selectedId}
             onSelect={setSelectedId}
+            onDelete={deleteOne}
           />
         </aside>
         <section className="flex-1 overflow-y-auto">

@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from ..config import settings
 from ..db import get_db
-from ..models import Complaint
+from ..models import Complaint, Draft
 from ..nlp.pipeline import Pipeline
 from ..nlp.rewrite import rewrite_complaint
 from ..schemas import ComplaintIngest, ComplaintListItem, ComplaintOut
@@ -80,3 +80,22 @@ def get_complaint(complaint_id: int, db: Session = Depends(get_db)):
     if not c:
         raise HTTPException(404, "민원을 찾을 수 없습니다.")
     return c
+
+
+@router.delete("", status_code=204)
+def clear_all(db: Session = Depends(get_db)):
+    """전체 민원·초안 삭제 (대시보드 비우기)."""
+    db.query(Draft).delete()
+    db.query(Complaint).delete()
+    db.commit()
+
+
+@router.delete("/{complaint_id}", status_code=204)
+def delete_complaint(complaint_id: int, db: Session = Depends(get_db)):
+    """민원 1건 삭제."""
+    c = db.get(Complaint, complaint_id)
+    if not c:
+        raise HTTPException(404, "민원을 찾을 수 없습니다.")
+    db.query(Draft).filter(Draft.complaint_id == complaint_id).delete()
+    db.delete(c)
+    db.commit()
