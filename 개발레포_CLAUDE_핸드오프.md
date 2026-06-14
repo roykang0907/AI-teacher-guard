@@ -135,7 +135,7 @@
 
 | 용도 | 모델 | 비고 |
 |------|------|------|
-| 1단계 공격성 분류 | **KoBERT 파인튜닝** ⭐ (확정) | `skt/kobert-base-v1` + `kobert_tokenizer` (또는 `monologg/kobert`). AI Hub 감성 대화 말뭉치. 인코더 전용 = 분류·점수화 담당. 여유 시 KoELECTRA와 F1 비교 = 가산점 |
+| 1단계 공격성 분류 | **klue/roberta-base 파인튜닝** ⭐ (확정, 2026-06-14 KoBERT에서 변경) | 표준 `AutoTokenizer`(KoBERT 토크나이저 불필요). AI Hub 감성 대화 말뭉치. 인코더 전용 = 분류·점수화 담당. **팀원이 다른 맥에서 담당.** 여유 시 KoELECTRA/KoBERT와 F1 비교 = 가산점 |
 | 2단계 순화 변환 | **로컬 생성형 LLM — Qwen2.5-14B** + QLoRA (기본값, 확정) | **Ollama로 서빙** (`ollama pull qwen2.5:14b`). 한국어 순화 품질 기준 기본값. 대안: Llama 3.x (`ollama pull llama3.1`) — 둘 다 GGUF 디코더라 교체 용이. ⚠️ KoBART/KoT5는 Ollama 미지원(HF 전용)이라 Ollama 경로에서는 제외 |
 | 3단계 답변 보조 | 2단계 모델 + RAG | 32B까지 맥북 감당 가능 |
 | 양자화 | Q6_K 또는 Q8_0 | 128GB RAM 활용, 품질 손실 최소 |

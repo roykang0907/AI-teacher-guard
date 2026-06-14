@@ -16,14 +16,15 @@
 ## ✅ 확정된 기술 결정 (변경 금지, 바꾸려면 사용자 확인)
 
 ```
-1단계 분류  → KoBERT (인코더) ............ AI Hub 감성 대화 말뭉치 → 정상/주의/위험 3클래스
+1단계 분류  → KLUE/RoBERTa-base (인코더) .. AI Hub 감성 대화 말뭉치 → 정상/주의/위험 3클래스 (팀원 담당)
 2단계 순화  → Qwen2.5-14B (디코더) ....... AI Hub 공적 말하기 실습·평가 데이터 + 합성데이터, QLoRA
               ↳ Ollama 서빙 (`ollama pull qwen2.5:14b`), 대안 Llama 3.x
 3단계 답변  → 2단계 모델 + RAG(pgvector)
 추론 런타임 → Ollama (localhost:11434)
 ```
 
-- **모델은 2개.** KoBERT는 인코더라 **분류만** 가능(생성 불가). 순화(rewrite)는 생성형 디코더 LLM이 별도로 담당.
+- **모델은 2개.** KLUE/RoBERTa는 인코더라 **분류만** 가능(생성 불가). 순화(rewrite)는 생성형 디코더 LLM이 별도로 담당.
+  - (2026-06-14 변경: 1단계 KoBERT → `klue/roberta-base`. 표준 AutoTokenizer라 토크나이저 설치 불필요. **팀원이 다른 맥에서 담당**.)
 - 파인튜닝 흐름: LoRA 병합 → GGUF 변환 → `ollama create`.
 
 ### 스택
@@ -33,7 +34,7 @@
   - ↳ 앱이 필요하면 웹 코드 유지한 채 Capacitor로 래핑 가능
   - ↳ 답변 린터(draft/validate)는 유지하되, 인라인 밑줄이 아니라 '제안/점검' 보조로 사용
 - ML: transformers + PEFT + TRL (+ Unsloth), QLoRA 4-bit (r=16, alpha=32)
-- 1단계: `skt/kobert-base-v1` + `kobert_tokenizer`
+- 1단계: `klue/roberta-base` (표준 AutoTokenizer) — 팀원 담당
 
 ### 절대 원칙 (발표 방어 논리 = 변경 금지)
 1. 순화 뷰 기본 + **원본 항상 열람 가능** (은폐 아님)

@@ -1,7 +1,7 @@
-"""1단계 KoBERT 분류기 설정.
+"""1단계 분류기 설정.
 
-확정된 기술 결정(CLAUDE.md): `skt/kobert-base-v1` + `kobert_tokenizer`.
-환경변수 KOBERT_MODEL 로 백본 교체 가능(예: monologg/kobert, KoELECTRA 비교 실험용).
+확정된 기술 결정(CLAUDE.md): `klue/roberta-base` (표준 AutoTokenizer, 팀원 담당).
+환경변수 CLF_MODEL 로 백본 교체 가능(예: skt/kobert-base-v1, KoELECTRA 비교 실험용).
 """
 
 from __future__ import annotations
@@ -13,8 +13,10 @@ from dataclasses import dataclass
 @dataclass
 class TrainConfig:
     # --- 모델 ---
-    # KoBERT 토크나이저는 kobert_tokenizer.KoBERTTokenizer 사용(아래 model.py).
-    backbone: str = os.environ.get("KOBERT_MODEL", "skt/kobert-base-v1")
+    # 1단계 분류 백본: klue/roberta-base (확정). klue 는 표준 AutoTokenizer 사용.
+    backbone: str = os.environ.get("CLF_MODEL") or os.environ.get(
+        "KOBERT_MODEL", "klue/roberta-base"
+    )
     num_labels: int = 3
     max_length: int = 128
 
