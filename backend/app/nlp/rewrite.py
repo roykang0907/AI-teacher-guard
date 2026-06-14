@@ -51,15 +51,38 @@ def rewrite_complaint(text: str) -> tuple[str, str]:
     return ("[자동 순화 미적용 — Ollama 미가동] 원문을 확인하세요.", "stub")
 
 
-def draft_reply(complaint_text: str, rewritten: str | None = None) -> tuple[str, str]:
+# 카테고리별 stub 답변 본문 (Ollama 미가동 시 — 카테고리마다 다른 톤)
+_STUB_BODY: dict[str, str] = {
+    "안전·폭력": "자녀의 안전과 관련해 많이 놀라고 걱정되셨을 것 같습니다. "
+    "현재 해당 상황의 사실관계를 신속히 확인하고 있으며, 확인되는 대로 경위와 조치 사항을 안내드리겠습니다.",
+    "환불·분쟁": "비용 관련하여 불편을 드린 점 유감스럽게 생각합니다. "
+    "말씀하신 내역을 다시 확인하여 정산 기준과 환불 가능 여부를 정리해 안내드리겠습니다.",
+    "학습상담": "자녀의 학습에 마음 많이 쓰이셨을 것 같습니다. "
+    "현재 학습 상황을 정리하여, 가정에서 함께 도울 수 있는 방법과 상담 일정을 제안드리겠습니다.",
+    "단순문의": "문의 주셔서 감사합니다. 해당 안내 사항을 다시 확인하여 정확한 내용을 안내드리겠습니다.",
+    "감정성불만": "불편을 느끼셨다니 유감스럽게 생각합니다. "
+    "어떤 점이 문제였는지 확인한 뒤, 개선 방안을 함께 말씀드리겠습니다.",
+    "칭찬·감사": "따뜻한 말씀 감사합니다. 앞으로도 자녀가 즐겁게 참여할 수 있도록 세심히 살피겠습니다.",
+}
+_STUB_DEFAULT = "말씀 주신 내용 잘 확인했습니다. 사실관계를 확인한 뒤 다시 연락드리겠습니다."
+
+
+def draft_reply(
+    complaint_text: str,
+    rewritten: str | None = None,
+    category: str | None = None,
+    emergency: bool = False,
+) -> tuple[str, str]:
     """답변 초안 생성. 반환 (초안, engine)."""
     base = rewritten or complaint_text
-    out = _ollama_generate(f"민원 요지: {base}\n위 민원에 대한 교사 답변 초안을 작성하라.", _DRAFT_SYSTEM)
+    out = _ollama_generate(
+        f"민원 요지: {base}\n위 민원에 대한 교사 답변 초안을 작성하라.", _DRAFT_SYSTEM
+    )
     if out:
         return out, "ollama"
-    return (
-        "안녕하세요, 학부모님. 말씀 주신 내용 잘 확인했습니다. "
-        "먼저 걱정 끼쳐 드린 점 유감스럽게 생각합니다. "
-        "현재 사실관계를 확인하고 있으며, 확인되는 대로 다시 연락드리겠습니다.",
-        "stub",
-    )
+
+    # stub 폴백 — 카테고리별로 다른 본문 + 긴급 시 신속 대응 문구
+    body = _STUB_BODY.get(category or "", _STUB_DEFAULT)
+    urgent = "사안의 긴급성을 인지하고 있으며, 최우선으로 살피겠습니다. " if emergency else ""
+    text = f"안녕하세요, 학부모님. {urgent}{body}"
+    return text, "stub"

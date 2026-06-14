@@ -26,7 +26,12 @@ def suggest(payload: DraftSuggestRequest, db: Session = Depends(get_db)):
     c = db.get(Complaint, payload.complaint_id)
     if not c:
         raise HTTPException(404, "민원을 찾을 수 없습니다.")
-    suggestion, engine = draft_reply(c.original_text, c.rewritten_text)
+    suggestion, engine = draft_reply(
+        c.original_text,
+        c.rewritten_text,
+        category=c.category,
+        emergency=bool(c.emergency and c.emergency.get("is_emergency")),
+    )
     return DraftSuggestion(
         complaint_id=c.id,
         suggestion=suggestion,
