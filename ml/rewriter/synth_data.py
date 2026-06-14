@@ -161,7 +161,7 @@ def summarize(records: list[dict]) -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="합성 민원 데이터 생성")
-    ap.add_argument("--n", type=int, default=1000, help="생성 건수 목표")
+    ap.add_argument("--n", type=int, default=2000, help="생성 건수 목표")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--out", default=str(DEFAULT_OUT), help="JSONL 출력 경로")
     ap.add_argument(
