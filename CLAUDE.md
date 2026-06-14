@@ -28,9 +28,10 @@
 
 ### 스택
 - 백엔드: FastAPI(Python 3.11) + PostgreSQL + pgvector + WebSocket
-- 프론트: **Expo(React Native) + TS + NativeWind + gluestack-ui** + Zustand + React Query + 커스텀 LintEditor
-  - ↳ `npm run web`(브라우저) / `npm run ios`(네이티브 앱) 동시 지원. (2026-06-07 사용자 확정 — 기존 Vite 웹에서 변경)
-  - ↳ Tiptap은 웹 전용이라 제외 → 실시간 빨간줄은 `TextInput + 하이라이트 오버레이` 커스텀 구현
+- 프론트: **Vite + React + TS + Tailwind** + React Query + Zustand
+  - ↳ 3단계는 '실시간 빨간줄'을 빼고 **AI 제안 답변을 교사가 편집**하는 방식으로 단순화 (2026-06-14 사용자 확정 — Expo 검토했으나 빨간줄 불필요로 웹 우선 복귀)
+  - ↳ 앱이 필요하면 웹 코드 유지한 채 Capacitor로 래핑 가능
+  - ↳ 답변 린터(draft/validate)는 유지하되, 인라인 밑줄이 아니라 '제안/점검' 보조로 사용
 - ML: transformers + PEFT + TRL (+ Unsloth), QLoRA 4-bit (r=16, alpha=32)
 - 1단계: `skt/kobert-base-v1` + `kobert_tokenizer`
 
@@ -58,7 +59,7 @@
    - 승인 후 실데이터 파인튜닝 → Macro-F1 평가 (위험→정상 오분류 최소화가 최우선)
 3. **STEP 3 — 2단계 순화 LLM + RAG**: 합성데이터 1000건 생성 → Qwen2.5 QLoRA → GGUF → Ollama → pgvector RAG
 4. **STEP 4 — 백엔드**: FastAPI 5 엔드포인트 + 린터 룰 + docker-compose
-5. **STEP 5 — 프론트(Expo)**: 비동기 대시보드(순화 카드/원본 토글/우선순위 큐) + 커스텀 LintEditor 실시간 빨간줄 (web/ios 공용)
+5. **STEP 5 — 프론트(Vite 웹)**: 비동기 대시보드(순화 카드/원본 토글/우선순위 큐) + AI 제안 답변 편집
 6. **STEP 6 — 통합·시연·발표**
 
 ### FastAPI 엔드포인트 (4단계 목표)

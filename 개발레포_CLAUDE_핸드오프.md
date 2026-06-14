@@ -152,11 +152,13 @@
 - PostgreSQL + pgvector (RAG)
 - WebSocket (실시간 민원 푸시)
 
-### 프론트엔드 (✅ 2026-06-07 Expo로 변경 — 사용자 확정)
-- **Expo (React Native) + TypeScript** — `npm run web`(브라우저) + `npm run ios`(네이티브 앱) 동시 지원
-- **NativeWind** (Tailwind 문법) + **gluestack-ui** (shadcn/ui 대체)
-- Zustand (상태), React Query (서버 상태)
-- **커스텀 LintEditor** (답변 편집 — 실시간 빨간줄). ※ Tiptap은 웹 전용이라 RN 호환 커스텀 컴포넌트(`TextInput` + 하이라이트 오버레이)로 대체
+### 프론트엔드 (✅ 2026-06-14 Vite 웹으로 확정 — 사용자 확정)
+- **Vite + React + TypeScript + Tailwind**
+- React Query (서버 상태), Zustand (클라 상태)
+- 3단계 답변: **실시간 빨간줄 제거 → "AI 제안 답변을 교사가 편집"** 방식으로 단순화
+  (Expo도 검토했으나, 빨간줄이 빠지면서 무거운 에디터가 불필요 → 웹 우선이 가장 가볍고 시연 유리)
+- 답변 린터(`draft/validate`)는 유지하되 인라인 밑줄이 아닌 보조 점검으로 사용
+- 앱이 필요하면 웹 코드를 Capacitor로 래핑 가능
 
 ### ML / 파인튜닝
 - transformers + PEFT + TRL (+ Unsloth)
@@ -198,7 +200,7 @@
 / (개발 레포)
 ├── ml/          # KoBERT 분류기, 순화 LLM 파인튜닝, 노트북, 변환 스크립트
 ├── backend/     # FastAPI, 파이프라인, pgvector RAG, 린터 룰
-├── frontend/    # Expo(React Native) 대시보드 (web + ios)
+├── frontend/    # Vite + React + TS 대시보드 (웹)
 ├── data/        # 학습용 CSV (대용량 원본은 복사 X, 필요분만)
 ├── docs/        # 이 핸드오프 문서 + 설계 메모
 └── .gitignore   # 모델·대용량 데이터 제외
