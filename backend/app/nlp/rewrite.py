@@ -85,13 +85,9 @@ def draft_reply(
     references: list[dict] | None = None,
 ) -> tuple[str, str]:
     """답변 초안 생성. 반환 (초안, engine). references=RAG 매칭 지침(UI 표시용)."""
-    # 순화문이 stub(미적용 안내)이면 원문을 근거로 사용 (stub을 민원으로 오해 방지)
-    base = complaint_text
-    if rewritten and _STUB_REWRITE_MARK not in rewritten:
-        base = rewritten
-    # ⚠️ 학습과 동일한 '답변 작성' 지시문을 붙여 순화와 작업을 명확히 구분(파인튜닝 모델 호환).
-    #    RAG 지침은 프롬프트에 넣지 않고 UI(references)로만 보여 준다.
-    out = _ollama_generate(_DAPBYEON_INSTR + base, _DRAFT_SYSTEM)
+    # ⚠️ 학습 시 답변 task 의 입력은 '민원 원문'이었다. 순화문이 아니라 원문을 그대로 넣어야
+    #    모델이 실제 민원 맥락을 보고 답한다(순화문을 넣으면 '요약'을 민원으로 오해함).
+    out = _ollama_generate(_DAPBYEON_INSTR + complaint_text, _DRAFT_SYSTEM)
     if out:
         return out, "ollama"
 
