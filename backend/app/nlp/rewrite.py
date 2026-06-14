@@ -8,14 +8,18 @@ from __future__ import annotations
 
 from ..config import settings
 
+_KOREAN_ONLY = "반드시 한국어로만 작성한다. 중국어·영어 등 다른 언어를 절대 섞지 마라. "
+
 _REWRITE_SYSTEM = (
-    "너는 학부모 민원을 교사가 보기 쉽게 다듬는 도우미다. "
+    _KOREAN_ONLY
+    + "너는 학부모 민원을 교사가 보기 쉽게 다듬는 도우미다. "
     "감정·공격·과장 표현을 제거하고 핵심 요구만 공적이고 정중한 한 문장으로 요약하라. "
     "사실을 지어내지 말고, 요약문만 출력하라."
 )
 
 _DRAFT_SYSTEM = (
-    "너는 교사가 학부모에게 보낼 답변 초안을 돕는다. 다음을 반드시 지켜라.\n"
+    _KOREAN_ONLY
+    + "너는 교사가 학부모에게 보낼 답변 초안을 돕는다. 다음을 반드시 지켜라.\n"
     "1) 공감 → 사실관계 확인 절차 → 후속 조치 약속 순서로 쓴다.\n"
     "2) 과실을 단정하지 말고 '확인 중'임을 밝힌다.\n"
     "3) 이름·날짜 등 모르는 정보를 지어내지 말고, '[학부모 성함]' 같은 대괄호 자리표시자를 절대 쓰지 마라. "
@@ -38,6 +42,7 @@ def _ollama_generate(prompt: str, system: str) -> str | None:
                 "system": system,
                 "prompt": prompt,
                 "stream": False,
+                "options": {"temperature": 0.3},
             },
             timeout=60.0,
         )
