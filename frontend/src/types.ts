@@ -46,9 +46,16 @@ export interface LintResult {
   disclaimer: string;
 }
 
+export interface GuidelineRef {
+  source: string;
+  title: string;
+  text: string;
+}
+
 export interface DraftSuggestion {
   complaint_id: number;
   suggestion: string;
   engine: string;
+  references: GuidelineRef[];
   disclaimer: string;
 }

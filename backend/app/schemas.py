@@ -74,8 +74,15 @@ class LintResult(BaseModel):
     disclaimer: str
 
 
+class GuidelineRef(BaseModel):
+    source: str
+    title: str
+    text: str
+
+
 class DraftSuggestion(BaseModel):
     complaint_id: int
     suggestion: str
     engine: str
+    references: list[GuidelineRef]  # RAG 매칭 지침
     disclaimer: str

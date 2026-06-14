@@ -10,10 +10,12 @@ from ..db import get_db
 from ..linter.lint import lint_summary
 from ..models import Complaint
 from ..nlp.rewrite import draft_reply
+from ..rag.service import retrieve
 from ..schemas import (
     DraftSuggestion,
     DraftSuggestRequest,
     DraftValidateRequest,
+    GuidelineRef,
     LintResult,
 )
 
@@ -26,16 +28,22 @@ def suggest(payload: DraftSuggestRequest, db: Session = Depends(get_db)):
     c = db.get(Complaint, payload.complaint_id)
     if not c:
         raise HTTPException(404, "민원을 찾을 수 없습니다.")
+
+    # RAG: 관련 교육청 지침/법령 검색
+    refs = retrieve(c.original_text, category=c.category, k=2)
+
     suggestion, engine = draft_reply(
         c.original_text,
         c.rewritten_text,
         category=c.category,
         emergency=bool(c.emergency and c.emergency.get("is_emergency")),
+        references=refs,
     )
     return DraftSuggestion(
         complaint_id=c.id,
         suggestion=suggestion,
         engine=engine,
+        references=[GuidelineRef(**r) for r in refs],
         disclaimer=settings.disclaimer,
     )
 

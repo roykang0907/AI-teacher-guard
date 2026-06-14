@@ -72,11 +72,17 @@ def draft_reply(
     rewritten: str | None = None,
     category: str | None = None,
     emergency: bool = False,
+    references: list[dict] | None = None,
 ) -> tuple[str, str]:
-    """답변 초안 생성. 반환 (초안, engine)."""
+    """답변 초안 생성. 반환 (초안, engine). references=RAG 매칭 지침."""
     base = rewritten or complaint_text
+    ref_block = ""
+    if references:
+        joined = "\n".join(f"- {r['title']}: {r['text']}" for r in references)
+        ref_block = f"\n참고 지침(근거로 활용, 그대로 베끼지 말 것):\n{joined}"
     out = _ollama_generate(
-        f"민원 요지: {base}\n위 민원에 대한 교사 답변 초안을 작성하라.", _DRAFT_SYSTEM
+        f"민원 요지: {base}{ref_block}\n위 민원에 대한 교사 답변 초안을 작성하라.",
+        _DRAFT_SYSTEM,
     )
     if out:
         return out, "ollama"

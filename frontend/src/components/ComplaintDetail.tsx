@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
-import type { Complaint, LintResult } from "../types";
+import type { Complaint, GuidelineRef, LintResult } from "../types";
 import { labelColor, intensityBars } from "../ui";
 
 interface Props {
@@ -11,12 +11,14 @@ export function ComplaintDetail({ complaintId }: Props) {
   const [c, setC] = useState<Complaint | null>(null);
   const [showOriginal, setShowOriginal] = useState(false);
   const [draft, setDraft] = useState("");
+  const [refs, setRefs] = useState<GuidelineRef[]>([]);
   const [lint, setLint] = useState<LintResult | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setC(null);
     setDraft("");
+    setRefs([]);
     setLint(null);
     setShowOriginal(false);
     api.getComplaint(complaintId).then(setC);
@@ -29,6 +31,7 @@ export function ComplaintDetail({ complaintId }: Props) {
     try {
       const s = await api.suggestDraft(complaintId);
       setDraft(s.suggestion);
+      setRefs(s.references);
       setLint(null);
     } finally {
       setLoading(false);
@@ -109,6 +112,22 @@ export function ComplaintDetail({ complaintId }: Props) {
           placeholder="‘AI 제안 받기’로 초안을 받아 직접 수정하세요."
           className="flex-1 resize-none rounded border border-slate-200 p-3 text-sm focus:border-blue-400 focus:outline-none"
         />
+
+        {/* RAG 매칭 지침 */}
+        {refs.length > 0 && (
+          <div className="mt-2 rounded border border-blue-100 bg-blue-50 p-2 text-xs">
+            <div className="mb-1 font-semibold text-blue-700">
+              📎 관련 지침 (RAG)
+            </div>
+            <ul className="space-y-1">
+              {refs.map((r, i) => (
+                <li key={i} className="text-blue-900">
+                  <span className="font-medium">[{r.source}]</span> {r.title}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* 표현 점검 결과 (인라인 밑줄 대신 목록) */}
         {lint && (
