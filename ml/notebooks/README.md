@@ -8,3 +8,10 @@
 - 결과: `CLASSIFIER_MODEL_DIR=<푼 경로> uvicorn app.main:app --reload` 로 백엔드 연동
 
 > Colab 런타임을 GPU(T4)로 설정 후 위에서부터 실행.
+
+## train_rewriter_qlora_colab.ipynb
+2단계 순화·답변 LLM(Qwen2.5-7B) QLoRA 파인튜닝 (Unsloth).
+- 입력: `synth.jsonl` (원문→순화 + 원문→답변 쌍)
+- 두 작업 동시 학습 → GGUF(q4_k_m) export → 맥에서 `ollama create aitg-sunhwa`
+- 백엔드 연결: `OLLAMA_MODEL=aitg-sunhwa uvicorn app.main:app --reload`
+- 런타임 GPU(T4) 필요. 14B는 A100(Colab Pro).

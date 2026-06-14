@@ -103,11 +103,14 @@ def generate(n: int, seed: int = 42) -> list[dict]:
             continue
         seen.add(original)
         rewritten = _fill(tmpl["rewr"], child, topic)
+        # 답변은 교사 화자이므로 학생을 '자녀분'으로 칭한다(학부모 말투 '제 아들' 방지)
+        reply = _fill(tmpl["reply"], "자녀분", topic)
         emg = detect_emergency(original)
         records.append(
             {
                 "original": original,
                 "rewritten": rewritten,
+                "reply": reply,
                 "label": tmpl["label"],
                 "category": tmpl["category"],
                 "intensity": tmpl["intensity"],

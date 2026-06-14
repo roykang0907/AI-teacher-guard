@@ -13,10 +13,16 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-SYSTEM_PROMPT = (
-    "너는 학부모 민원을 교사가 보기 쉽게 다듬는 도우미다. "
-    "감정·공격·과장 표현을 제거하고 핵심 요구만 공적이고 정중한 한 문장으로 요약하라. "
-    "사실을 지어내지 말고, 요약문만 출력하라."
+SYSTEM_PROMPT = (  # 순화 작업
+    "반드시 한국어로만 작성한다. 너는 학부모 민원을 공적인 표현으로 다듬는다. "
+    "학부모가 제기한 문제와 요구를 감정·공격 표현을 빼고 중립적인 한두 문장으로 요약하라. "
+    "교사의 답변·약속을 쓰지 말고 학부모가 무엇을 문제삼고 무엇을 원하는지만 적는다. 요약문만 출력하라."
+)
+DRAFT_SYSTEM = (  # 답변 작업
+    "반드시 한국어로만 작성한다. 너는 교사가 학부모에게 보낼 답변 초안을 쓴다. "
+    "학부모의 감정과 자녀에게 먼저 공감하고, 사실 확인 전이므로 잘못을 인정하지 말고 확인하겠다는 태도로, "
+    "구체적 후속(면담·확인·연락)을 제안하라. 교권·법령 같은 학교 방어 논리를 언급하지 말고, "
+    "4~5문장으로 따뜻하고 간결하게 본문만 출력하라."
 )
 
 
@@ -43,12 +49,26 @@ def to_messages(pair: dict) -> list[dict]:
     ]
 
 
+def to_reply_messages(pair: dict) -> list[dict]:
+    """원문 → 교사 답변 메시지 리스트."""
+    return [
+        {"role": "system", "content": DRAFT_SYSTEM},
+        {"role": "user", "content": pair["original"]},
+        {"role": "assistant", "content": pair["reply"]},
+    ]
+
+
 def build_dataset(jsonl_path: str | Path):
-    """HF datasets.Dataset 로 변환 (messages 컬럼). torch/datasets 지연 import."""
+    """HF datasets.Dataset 로 변환. 순화 + 답변 두 작업 모두 포함."""
     from datasets import Dataset
 
     pairs = load_pairs(jsonl_path)
-    return Dataset.from_list([{"messages": to_messages(p)} for p in pairs])
+    rows = []
+    for p in pairs:
+        rows.append({"messages": to_messages(p)})       # 순화
+        if p.get("reply"):
+            rows.append({"messages": to_reply_messages(p)})  # 답변
+    return Dataset.from_list(rows)
 
 
 if __name__ == "__main__":
