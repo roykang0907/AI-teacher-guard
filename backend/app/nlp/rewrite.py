@@ -15,10 +15,15 @@ _REWRITE_SYSTEM = (
 )
 
 _DRAFT_SYSTEM = (
-    "너는 교사의 학부모 답변 초안을 돕는 도우미다. "
-    "공감 → 사실관계 확인 절차 → 후속 조치 약속 순으로 정중하게 작성하라. "
-    "과실을 단정하지 말고, 확인 중임을 밝혀라. 답변 본문만 출력하라."
+    "너는 교사가 학부모에게 보낼 답변 초안을 돕는다. 다음을 반드시 지켜라.\n"
+    "1) 공감 → 사실관계 확인 절차 → 후속 조치 약속 순서로 쓴다.\n"
+    "2) 과실을 단정하지 말고 '확인 중'임을 밝힌다.\n"
+    "3) 이름·날짜 등 모르는 정보를 지어내지 말고, '[학부모 성함]' 같은 대괄호 자리표시자를 절대 쓰지 마라. "
+    "호칭은 '학부모님'으로 통일한다.\n"
+    "4) 4~5문장 이내로 간결하게. 제목·서명 없이 답변 본문만 출력한다."
 )
+
+_STUB_REWRITE_MARK = "[자동 순화 미적용"
 
 
 def _ollama_generate(prompt: str, system: str) -> str | None:
@@ -75,7 +80,10 @@ def draft_reply(
     references: list[dict] | None = None,
 ) -> tuple[str, str]:
     """답변 초안 생성. 반환 (초안, engine). references=RAG 매칭 지침."""
-    base = rewritten or complaint_text
+    # 순화문이 stub(미적용 안내)이면 원문을 근거로 사용 (stub을 민원으로 오해 방지)
+    base = complaint_text
+    if rewritten and _STUB_REWRITE_MARK not in rewritten:
+        base = rewritten
     ref_block = ""
     if references:
         joined = "\n".join(f"- {r['title']}: {r['text']}" for r in references)
