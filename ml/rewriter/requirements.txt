@@ -1,0 +1,10 @@
+# 2단계 순화 LLM QLoRA 학습 의존성 (학습 머신: Colab/CUDA 권장)
+transformers>=4.44
+peft>=0.12
+trl>=0.9
+datasets>=2.20
+accelerate>=0.30
+bitsandbytes>=0.43      # 4-bit QLoRA — CUDA 전용(Apple Silicon 미지원)
+sentencepiece>=0.2
+# GGUF 변환은 llama.cpp 별도 clone (export_ollama.sh 참고)
+# Apple Silicon에서 학습 시 대안: mlx-lm (별도)

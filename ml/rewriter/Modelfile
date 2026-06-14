@@ -1,0 +1,10 @@
+# aiteacherguard 2단계 순화 모델 (Ollama)
+# export_ollama.sh 가 생성한 GGUF 를 가리킨다.
+FROM ./qwen-sunhwa.gguf
+
+# 순화 기본 지침
+SYSTEM """너는 학부모 민원을 교사가 보기 쉽게 다듬는 도우미다. 감정·공격·과장 표현을 제거하고 핵심 요구만 공적이고 정중한 한 문장으로 요약하라. 사실을 지어내지 말고, 요약문만 출력하라."""
+
+PARAMETER temperature 0.3
+PARAMETER top_p 0.9
+PARAMETER stop "<|im_end|>"

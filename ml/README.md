@@ -39,6 +39,23 @@ python -m classifier.predict --model outputs/kobert-classifier \
 승인 후 AI Hub 감성 대화 말뭉치를 `text,label` 스키마로 변환해 `--data` 에 투입하면
 같은 코드로 실데이터 파인튜닝이 된다.
 
-## (예정)
-- `rewriter/` — 2단계 순화 LLM (Qwen2.5-14B QLoRA → GGUF → Ollama)
-- `prepare_aihub.py` — AI Hub 원본 → text,label 변환
+## rewriter/ — 2단계 순화 LLM (Qwen2.5-14B QLoRA → GGUF → Ollama)
+
+| 파일 | 역할 |
+|---|---|
+| `synth_data.py` | 합성 민원(원문↔공적표현) 1000건 생성 |
+| `dataset.py` | 순화 쌍 → chat instruction 포맷 |
+| `train_qlora.py` | Qwen2.5-14B QLoRA(r=16, α=32, 4-bit) 학습 |
+| `merge_lora.py` | LoRA 어댑터 병합 |
+| `export_ollama.sh` + `Modelfile` | 병합→GGUF(Q6_K)→`ollama create` |
+
+```bash
+pip install -r rewriter/requirements.txt
+python -m rewriter.synth_data --n 1000                       # 데이터
+python -m rewriter.train_qlora --data ../data/processed/synth.jsonl   # 학습(GPU)
+BASE=Qwen/Qwen2.5-14B-Instruct ./rewriter/export_ollama.sh   # → Ollama 등록
+# 백엔드: OLLAMA_MODEL=aitg-sunhwa uvicorn app.main:app --reload
+```
+
+> ⚠️ QLoRA 4-bit(bitsandbytes)는 CUDA 전용 → 학습은 Colab/A100 권장.
+> Apple Silicon은 추론(Ollama)만 담당. (역할 분담: 학습 실행=사용자)
