@@ -42,6 +42,10 @@ data/*.parquet
 !data/samples/
 !data/samples/**
 
+# --- DB (로컬 SQLite) ---
+*.db
+*.sqlite3
+
 # --- Node / Frontend ---
 node_modules/
 dist/

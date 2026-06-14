@@ -1,0 +1,20 @@
+# Postgres + pgvector (2단계 RAG용). 1단계 데모는 SQLite로 docker 없이도 가능.
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: aitg
+      POSTGRES_PASSWORD: aitg
+      POSTGRES_DB: aitg
+    ports:
+      - "5432:5432"
+    volumes:
+      - aitg_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aitg"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  aitg_pgdata:
