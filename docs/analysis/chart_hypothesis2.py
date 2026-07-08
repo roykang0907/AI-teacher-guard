@@ -94,14 +94,14 @@ for gc, q in zip(GX, QUESTIONS):
 # 동의 기준선(4점)
 ax.axhline(4, color=LINE, ls="--", lw=1.3, zorder=1)
 
-# 계층 차이 최대 주석 (Q15 위)
-ax.annotate("계층 차이 최대\n교사 4.75  ›  학생 3.93",
-            xy=(GX[2], 5.02), ha="center", va="top",
-            fontsize=9.5, color=CORAL, fontweight="bold", linespacing=1.25,
-            bbox=dict(boxstyle="round,pad=0.45", fc="white", ec=CORAL, lw=1.3))
+# 계층 차이 최대 주석 (우상단 고정 — 막대와 겹치지 않게)
+ax.text(0.985, 0.965, "Q15 계층 차이 최대\n교사 4.75  ›  학생 3.93",
+        transform=ax.transAxes, ha="right", va="top",
+        fontsize=9.5, color=CORAL, fontweight="bold", linespacing=1.25,
+        bbox=dict(boxstyle="round,pad=0.45", fc="white", ec=CORAL, lw=1.3))
 
 # ---- 축/그리드/스파인 (#3·#4 느낌) ----
-ax.set_ylim(0, 5.6)
+ax.set_ylim(0, 5.8)
 ax.set_yticks([0, 1, 2, 3, 4, 5])
 ax.set_ylabel("5점 척도 평균 (동의도)", fontsize=12, color=INK)
 ax.set_xticks(GX)
