@@ -13,6 +13,7 @@
 | `01_종합_대시보드.png` | 6개 패널 종합(핵심 합의·학부모 두 얼굴·공통문항 비교·교사 Q3/Q4·학부모 Q5) |
 | `02_핵심_과도민원_계층합의.png` | 발표용 단일 그래프 — 세 계층 모두 "과도민원=문제" 동의 |
 | `03_응답자_구성.png` | 응답자 계층 구성 파이 |
+| `04_가설2_계층별_인식차이.png` | 가설2 — 교권침해 심각성 계층별 인식차이(Q12·Q13·Q15) · 코랄/블루/그레이 스타일 |
 
 ## 핵심 결론
 
@@ -25,5 +26,6 @@
 ## 재생성
 
 ```bash
-backend/.venv/bin/python docs/analysis/charts.py   # matplotlib 필요
+backend/.venv/bin/python docs/analysis/charts.py            # 01~03 (Mac 경로 하드코딩)
+python docs/analysis/chart_hypothesis2.py                   # 04 (경로 독립·한글폰트 자동탐지, Mac/Win 공용)
 ```
